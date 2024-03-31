@@ -14,7 +14,11 @@ typedef struct Queue Queue;
 
 /* You should define your struct Queue here */
 struct Queue {
-};
+    void** data;
+    int maxSize;
+    int front;
+    int rear;
+} Q;
 
 /*
  * Creates a new Queue for at most max_size void* elements.
