@@ -92,6 +92,102 @@ int newQueueSizeZero() {
  * to help you verify correctness of your Queue
  */
 
+
+/*
+    Regular test cases
+*/
+
+
+/*
+ * Checks that the size of a non-empty queue is 1.
+ */
+int enqOneElement() {
+    int element = 5;
+    assert(Queue_enq(queue, &element));
+    assert(Queue_size(queue) == 1);
+    return TEST_SUCCESS;
+}
+
+/*
+ * Checks that the size of a queue is 0 after enqueuing and dequeuing one element.
+ */
+int enqAndDeqOneElement() {
+    int element = 5;
+
+    assert(Queue_enq(queue, &element));
+    assert(Queue_deq(queue) == &element);
+    assert(Queue_size(queue) == 0);
+
+    return TEST_SUCCESS;
+}
+
+int enqMaxElements() {
+    int element = 5;
+    for (int i = 0; i < DEFAULT_MAX_QUEUE_SIZE; i++) {
+        assert(Queue_enq(queue, &element));
+    }
+    assert(Queue_size(queue) == DEFAULT_MAX_QUEUE_SIZE);
+    return TEST_SUCCESS;
+}
+
+int deqMaxElements() {
+    int element = 5;
+    for (int i = 0; i < DEFAULT_MAX_QUEUE_SIZE; i++) {
+        assert(Queue_enq(queue, &element));
+    }
+    for (int i = 0; i < DEFAULT_MAX_QUEUE_SIZE; i++) {
+        assert(Queue_deq(queue) == &element);
+    }
+    assert(Queue_size(queue) == 0);
+    return TEST_SUCCESS;
+}
+
+int deqEmptyQueue() {
+    assert(Queue_deq(queue) == NULL);
+    return TEST_SUCCESS;
+}
+
+int enqNullElement() {
+    assert(!Queue_enq(queue, NULL));
+    assert(Queue_size(queue) == 0);
+    return TEST_SUCCESS;
+}
+
+int enqOnceDeqTwice() {
+    int element = 5;
+    assert(Queue_enq(queue, &element));
+    assert(Queue_deq(queue) == &element);
+    assert(Queue_deq(queue) == NULL);
+    assert(Queue_size(queue) == 0);
+    return TEST_SUCCESS;
+}
+
+int enqOverMax() {
+    int element = 5;
+    for (int i = 0; i < DEFAULT_MAX_QUEUE_SIZE; i++) {
+        assert(Queue_enq(queue, &element));
+    }
+    assert(!Queue_enq(queue, &element));
+    assert(Queue_size(queue) == DEFAULT_MAX_QUEUE_SIZE);
+    return TEST_SUCCESS;
+}
+
+int enqWrapsAround() {
+    int element = 5;
+    for (int i = 0; i < (DEFAULT_MAX_QUEUE_SIZE/2); i++) {
+        assert(Queue_enq(queue, &element));
+    }
+    for (int i = 0; i < (DEFAULT_MAX_QUEUE_SIZE/2); i++) {
+        assert(Queue_deq(queue) == &element);
+    }
+    for (int i = 0; i < DEFAULT_MAX_QUEUE_SIZE; i++) {
+        assert(Queue_enq(queue, &element));
+    }
+
+    assert(Queue_size(queue) == DEFAULT_MAX_QUEUE_SIZE);
+    assert(Queue_deq(queue) == &element);
+    return TEST_SUCCESS;
+}
 /*
  * Main function for the Queue tests which will run each user-defined test in turn.
  */
@@ -99,6 +195,15 @@ int newQueueSizeZero() {
 int main() {
     runTest(newQueueIsNotNull);
     runTest(newQueueSizeZero);
+    runTest(enqOneElement);
+    runTest(enqAndDeqOneElement);
+    runTest(enqMaxElements);
+    runTest(deqMaxElements);
+    runTest(deqEmptyQueue);
+    runTest(enqNullElement);
+    runTest(enqOnceDeqTwice);
+    runTest(enqOverMax);
+    runTest(enqWrapsAround);
     /*
      * you will have to call runTest on all your test functions above, such as
      *

@@ -6,6 +6,7 @@
  */
 
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include "Queue.h"
 
@@ -15,38 +16,77 @@
  */
 
 
-Queue *new_Queue(int maxSize) {
+Queue *new_Queue(int max_size) {
     Queue *Q = (Queue *)malloc(sizeof(Queue));
-    Q->maxSize = maxSize;
-    Q->front = -1;
-    Q->rear = -1;
-    Q->data = (void **)malloc(maxSize * sizeof(void *)); // void ** is a pointer to a pointer to void, this allows for a generic array and eliminates the need for type casting when dequeueing elements
+    Q->max_size = max_size+1; // one extra space to distinguish between full and empty
+    Q->size = 0; // current size
+    Q->head = 0; // write index
+    Q->tail = 0; // read index
+    Q->data = (void **)calloc(Q->max_size, sizeof(void *));
     return Q;
 }
+/*
+void ** is a pointer to a pointer to void, this allows for a generic array and eliminates the need for type casting when dequeueing elements
+
+calloc not only allocates the memory but also initializes all bytes in the allocated storage to zero. 
+This is particularly useful when you're dealing with data structures as it ensures all fields are zeroed out.
+*/
 
 bool Queue_enq(Queue* this, void* element) {
-    if (this->front == 0 && this->rear==this->maxSize-1) {
+    int next;
+
+    next = (this->head + 1);
+    if (next >= this->max_size)
+        next = 0;
+    if (next == this->tail || element == NULL)
         return false;
-    } else if (this->front==-1) {
-        return false;
-    }
-    return false;
+
+    this->data[this->head] = element;
+    this->head = next;
+    this->size++;
+    return true;
 }
 
 void* Queue_deq(Queue* this) {
-    return NULL;
+    int next;
+    void *elem;
+
+    if (this->tail == this->head) // return null if queue is empty
+        return NULL;
+
+    next = (this->tail + 1); // where next element would be
+    if (next >= this->max_size) // wrap to start of queue to make it circular
+        next = 0;
+
+    elem = this->data[this->tail];
+    this->tail = next;
+    this->size--;
+
+    return elem;
 }
 
 int Queue_size(Queue* this) {
-    return -1;
+    return this->size;
 }
 
 bool Queue_isEmpty(Queue* this) {
-    return false;
+    return this->size == 0;
 }
 
 void Queue_clear(Queue* this) {
+    if(this) {
+        this->head = 0;
+        this->tail = 0;
+
+        for(int i = 0; i < this->max_size; i++) {
+            this->data[i] = NULL;
+        }
+    }
 }
 
 void Queue_destroy(Queue* this) {
+    if(this) {
+        free(this->data);
+        free(this);
+    }
 }
