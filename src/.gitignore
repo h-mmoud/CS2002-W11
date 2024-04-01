@@ -1,3 +1,4 @@
 *.o
+.nfs*
 TestQueue
 TestBlockingQueue

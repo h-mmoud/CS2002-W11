@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <semaphore.h>
 
 #include "Queue.h"
 
@@ -20,6 +21,7 @@ typedef struct BlockingQueue BlockingQueue;
 struct BlockingQueue {
     Queue* queue;
     pthread_mutex_t mutex;
+    sem_t current_size, available;
 };
 
 /*
