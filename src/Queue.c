@@ -22,7 +22,7 @@ Queue *new_Queue(int max_size) {
     Q->size = 0; // current size
     Q->head = 0; // write index
     Q->tail = 0; // read index
-    Q->data = (void **)calloc(Q->max_size, sizeof(void *));
+    Q->data = (void **)malloc(Q->max_size * sizeof(void *));
     return Q;
 }
 /*
@@ -30,6 +30,7 @@ void ** is a pointer to a pointer to void, this allows for a generic array and e
 
 calloc not only allocates the memory but also initializes all bytes in the allocated storage to zero. 
 This is particularly useful when you're dealing with data structures as it ensures all fields are zeroed out.
+(This isnt really important in this case becaues we won't be reading any uninitiallised data from the array)
 */
 
 bool Queue_enq(Queue* this, void* element) {
@@ -38,6 +39,7 @@ bool Queue_enq(Queue* this, void* element) {
     next = (this->head + 1);
     if (next >= this->max_size)
         next = 0;
+    
     if (next == this->tail || element == NULL)
         return false;
 
@@ -51,7 +53,7 @@ void* Queue_deq(Queue* this) {
     int next;
     void *elem;
 
-    if (this->tail == this->head) // return null if queue is empty
+    if (Queue_isEmpty(this)) // return null if queue is empty
         return NULL;
 
     next = (this->tail + 1); // where next element would be
@@ -70,16 +72,19 @@ int Queue_size(Queue* this) {
 }
 
 bool Queue_isEmpty(Queue* this) {
-    return this->size == 0;
+    return (this->tail == this->head);
 }
 
 void Queue_clear(Queue* this) {
     if(this) {
         this->head = 0;
         this->tail = 0;
-
-        for(int i = 0; i < this->max_size; i++) {
-            this->data[i] = NULL;
+        this->size = 0;
+        
+        if (Queue_isEmpty(this) == false) {
+            for (int i = 0; i < this->max_size; i++) {
+                this->data[i] = NULL;
+            }
         }
     }
 }

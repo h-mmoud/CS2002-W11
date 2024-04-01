@@ -16,7 +16,8 @@
 
 
 BlockingQueue *new_BlockingQueue(int max_size) {
-    return NULL;
+    Queue *queue = new_Queue(max_size);
+    pthread_mutex_t mutex = pthread_mutex_init();
 }
 
 bool BlockingQueue_enq(BlockingQueue* this, void* element) {

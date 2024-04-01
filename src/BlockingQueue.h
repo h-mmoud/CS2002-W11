@@ -9,6 +9,8 @@
 #define BLOCKING_QUEUE_H_
 
 #include <stdbool.h>
+#include <stdlib.h>
+#include <pthread.h>
 
 #include "Queue.h"
 
@@ -16,6 +18,8 @@ typedef struct BlockingQueue BlockingQueue;
 
 /* You should define your struct BlockingQueue here */
 struct BlockingQueue {
+    Queue* queue;
+    pthread_mutex_t mutex;
 };
 
 /*
