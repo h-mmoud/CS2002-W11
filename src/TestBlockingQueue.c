@@ -56,6 +56,13 @@ void runTest(int (*testFunction)()) {
     teardown();
 }
 
+void* threadFunc(void* arg) {
+    int element = *(int*)arg;
+    BlockingQueue_enq(queue, &element);
+    BlockingQueue_deq(queue);
+    return NULL;
+}
+
 
 /*
  * Two sample user-defined tests included below.
@@ -92,6 +99,39 @@ int newQueueSizeZero() {
  * to help you verify correctness of your BlockingQueue.
  */
 
+int enqAndDeqOneElement() {
+    int element = 5;
+
+    assert(BlockingQueue_enq(queue, &element));
+    assert(*(int*)BlockingQueue_deq(queue) == element);
+
+    return TEST_SUCCESS;
+}
+
+int enqAndDeqMultipleElements() {
+    int elements[] = {1, 2, 3, 4, 5};
+    for (int i = 0; i < 5; i++) {
+        assert(BlockingQueue_enq(queue, &elements[i]));
+    }
+    for (int i = 0; i < 5; i++) {
+        assert(*(int*)BlockingQueue_deq(queue) == elements[i]);
+    }
+    return TEST_SUCCESS;
+}
+
+int threadSafetyTest() {
+    pthread_t threads[10];
+    int elements[10];
+    for (int i = 0; i < 10; i++) {
+        elements[i] = i;
+        pthread_create(&threads[i], NULL, threadFunc, &elements[i]);
+    }
+    for (int i = 0; i < 10; i++) {
+        pthread_join(threads[i], NULL);
+    }
+    assert(BlockingQueue_size(queue) == 0);
+    return TEST_SUCCESS;
+}
 
 /*
  * Main function for the BlockingQueue tests which will run each user-defined test in turn.
@@ -100,13 +140,10 @@ int newQueueSizeZero() {
 int main() {
     runTest(newQueueIsNotNull);
     runTest(newQueueSizeZero);
-    /*
-     * you will have to call runTest on all your test functions above, such as
-     *
-     * runTest(enqOneElement);
-     * runTest(enqAndDeqOneElement);
-     *
-     */
+    
+    runTest(enqAndDeqOneElement);
+    runTest(enqAndDeqMultipleElements);
+    runTest(threadSafetyTest);
 
     printf("\nBlockingQueue Tests complete: %d / %d tests successful.\n----------------\n", success_count, total_count);
 

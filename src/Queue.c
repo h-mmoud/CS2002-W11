@@ -18,20 +18,20 @@
 
 Queue *new_Queue(int max_size) {
     Queue *Q = (Queue *)malloc(sizeof(Queue));
+    if (Q == NULL) return NULL;
+
     Q->max_size = max_size+1; // one extra space to distinguish between full and empty
     Q->size = 0; // current size
     Q->head = 0; // write index
     Q->tail = 0; // read index
     Q->data = (void **)malloc(Q->max_size * sizeof(void *));
+    
+    if (Q->data == NULL) {
+        free(Q);
+        return NULL;
+    }
     return Q;
 }
-/*
-void ** is a pointer to a pointer to void, this allows for a generic array and eliminates the need for type casting when dequeueing elements
-
-calloc not only allocates the memory but also initializes all bytes in the allocated storage to zero. 
-This is particularly useful when you're dealing with data structures as it ensures all fields are zeroed out.
-(This isnt really important in this case becaues we won't be reading any uninitiallised data from the array)
-*/
 
 bool Queue_enq(Queue* this, void* element) {
     int next;

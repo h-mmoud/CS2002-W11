@@ -16,12 +16,13 @@
 
 
 BlockingQueue *new_BlockingQueue(int max_size) {
-    BlockingQueue *bqueue = malloc(sizeof(BlockingQueue));
-    bqueue->queue = new_Queue(max_size);
-    pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-    sem_init(&bqueue->available, 0, max_size);
-    sem_init(&bqueue->current_size, 0, 0);
-    return bqueue;
+    BlockingQueue *bQueue = malloc(sizeof(BlockingQueue));
+    bQueue->queue = new_Queue(max_size);
+    
+    pthread_mutex_init(&bQueue->mutex, NULL);
+    sem_init(&bQueue->available, 0, max_size);
+    sem_init(&bQueue->current_size, 0, 0);
+    return bQueue;
 }
 
 bool BlockingQueue_enq(BlockingQueue* this, void* element) {
